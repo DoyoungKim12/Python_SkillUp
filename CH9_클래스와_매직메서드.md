@@ -233,8 +233,50 @@ class Dog(Mammal, Pet, Carnivore):
   - 예시로, format(6, 'b')는 6의 바이너리 표현을 반환한다. ('110')
   - 문자열을 표현할 때의 일반적인 내부 흐름을 요약하면 아래와 같다.
     - format 함수는 객체의 \_\_format__ 메서드 호출을 시도하며, 필요시 규약을 전달한다. <br> 이 메서드를 구현한다는 것은 클래스가 새로 정의한 포맷으로 표현한 문자열을 반환한다는 뜻이다. <br> 기본동작방식은 \_\_str__ 메서드를 호출한다.
+    - print 함수는 객체 클래스의 \_\_str__ 메서드를 호출한다.
+    - \_\_repr__ 메서드는 객체 표준 표현 방식의 문자열을 반환한다.  
     
+<br>
 
+### 9.10.2 객체 표현 메서드
+- 객체 표현 메서드와 설명을 아래에 정리한다.
+  - \_\_format__(self, spec) : format 함수에 객체를 직접 전달했을 때 호출, 반드시 포매팅된 문자열을 반환
+  - \_\_str__(self) : 사용자가 원하는 형태로 객체 데이터를 담은 문자열을 반환, 구현하지 않았다면 기본적으로 \_\_repr__ 메서드를 호출
+  - \_\_repr__(self) : 객체 표준 표현 방식으로 문자열을 반환
+  - \_\_hash__(self) : hash 함수에 객체가 인수로 주어졌을 때 호출, 해시 코드를 생성하여 해당 객체 타입을 데이터 딕셔너리에서 키로 사용할 수 있게 해줌, 반드시 정수를 반환
+  - \_\_bool__(self) : 불리언 변환 메서드, 모든 bool 함수를 호출하면 항상 호출됨, 제대로 동작하면 True 혹은 False를 반환
+ 
+- 아래 예제는 Point 클래스에서 \_\_str__과 \_\_repr__ 메서드를 \_\_init__과 함께 작성하는 이론적인 방법을 보여준다. 
+```python
+
+class Point:
+  big_prime_1 = 1200556037
+  big_prime_2 = 2444555677
+  
+  def __init__(self, x=0, y=0):
+    self.x = x
+    self.y = y
+    
+  def __str__(self):
+    s = str(self.x) + ', '
+    s += str(self.y)
+    return s
+    
+  def __repr__(self):
+    s = 'Point(' + str(self.x) + ', '
+    s += str(self.y) + ')'
+    return s
+    
+  def __hash__(self):
+    n = self.x * big_prime_1
+    return (n + self.y) % big_prime_2
+    
+  def __bool__(self):
+    return x and y
+
+
+
+```
 
 
 

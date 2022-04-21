@@ -55,9 +55,85 @@ print(d)
   - Decimal 객체를 생성하는 것은 부동소수점 객체를 생성하는 것보다 30배 더 많은 시간이 걸리며, 연산처리 속도는 60배 더 걸림
     - 정확성과 속도의 트레이드오프로, 정확성이 중요한 상황이 아니라면 부동소수점을 사용하는 것이 이득이다. 
 
+<br> <br>
 
+## 10.4 Decimal 객체를 위한 특수 연산
+- Decimal 객체를 생성하여 도움말을 호출하면 수많은 연산과 메서드를 확인 가능
+  - help(Decimal)
+  - 예시로 아래와 같은 메서드들이 있음
+    - normalize : 소수점 이하의 0을 제거, 객체가 가져야할 최소한의 소수만을 갖게 함 (다만, 이때 숫자상으로는 같아도(==), 객체는 신규객체 생성(is))
+    - as_tuple : 객체의 내부 정보를 확인할 수 있는 주요 정보 제공, tuple로 decimal 표현 가능
+    - getcontext : 최대 소수 자릿수, 올림하는 숫자 등의 정보 제공
 
+<br> <br>
 
+## 10.5 Decimal 클래스 애플리케이션
+- 사용자가 입력하는 값을 더해주는 애플리케이션 
+  - 매 값마다 반올림을 할지, 모든 값을 더한 이후에 반올림을 할지에 따라 소수점 끝값이 달라짐
+  - 이런 작은 오차를 잘 다루어야 함 
+
+<br> <br>
+
+## 10.6 Money 클래스 설계하기
+- 프로그래밍을 할 때 돈을 다루는 것은 굉장히 까다로우므로, Money 클래스를 직접 만들어보자.
+  - 통화 단위를 표현하는 units과 함께 10진수 수치를 저장하면 유용할 것
+    - unit은 'USD', 'EUR', 'CAD' 3개를 사용
+  - 포함 vs 상속
+    - 포함 : Money 객체를 컨테이너로 간주, 이 컨테이너에 단위 필드와 Decimal 객체를 함께 저장 (단점은 별도의 매직 메서드 작성 필요)
+    - 상속 : Money 객체에 단위 필드 속성을 추가, 한 종류의 특별한 Decimal 객체로 간주
+    - 둘 중 하나를 고르자면 상속이 더 나은 방법일 것(A는 B의 한 종류이지만, 특화 기능을 추가), 그러나 파이썬 언어는 이런 상황에서 상속을 사용하기 어려움
+    - 그렇기 때문에 Decimal 클래스를 사용하여 Money 클래스를 만드는 식의 객체 포함 방법을 사용할 것 (상속을 사용하는 방법은 10.12에서)
+      - Money 객체는 2개의 파트로 나뉘며, Decimal 객체인 dec_amt와 units로 불리는 문자열(str)로 구성될 것     
+
+<br> <br>
+
+## 10.7 기본 Money 클래스 작성하기 (포함 방식으로)
+- 간단한 클래스 정의문으로 Money 객체를 만들고 속성 값들을 출력할 수 있음
+- 여기에 Money 객체를 알아보기 쉽게 자동출력하는 기능도 추가할 것
+
+```python
+from decimal import Decimal
+
+class Money():
+  def __init__(self, v='0', units='USD'):
+    self.dec_amt = Decimal(v)
+    self.units = units
+
+m1 = Money('0.10')
+print(m1.dec_amt, m1.units)
+# 0.10 USD
+print(m1)
+# <__main__.Money object at 0x103cc6f60>
+```
+
+<br> <br>
+
+## 10.8 Money 객체 출력하기 ("\_\_str__", "\_\_repr__" )
+- Money 객체의 출력을 지정하려면 이 클래스의 \_\_str__ 메서드를 작성해야 함
+- 클래스의 기준 표현 방식도 설정하고 싶다면 \_\_repr__ 메서드를 별도로 추가하면 됨
+
+```python
+from decimal import Decimal
+
+class Money():
+  def __init__(self, v='0', units='USD'):
+    self.dec_amt = Decimal(v)
+    self.units = units
+    
+  def __str__(self):
+    s = str(self.dec_amt) + ' ' + self.units
+    return s
+  
+  def __repr__(self):
+    s = ('Money(' + str(slef.dec_amt) + ' ' + self.units + ')')
+    return s
+    
+m2 = Money('0.10')
+print(m2)
+# 0.10 USD
+m2
+# Money(0.10 USD)
+```
 
 
 

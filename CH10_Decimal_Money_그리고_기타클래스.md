@@ -135,6 +135,68 @@ m2
 # Money(0.10 USD)
 ```
 
+<br> <br>
+
+## 10.9 기타 Money용 연산
+- 예시로 Money 객체간 덧셈 연산을 추가해보자.
+
+```python
+from decimal import Decimal
+
+class Money():
+  '''Money 클래스
+  Decimal 값과 통화 단위를 함께 저장한다.
+  객체를 더할 때, 통화 단위가 다르면 환율을 반영하여 더한다.
+  '''
+  #환율을 딕셔너리로 미리 저장해둠 -> 특정 테이블에서 읽어오는 방식으로 변환하면 더 좋을 것
+  exch_dict = {
+    'USDCAD' : Decimal('0.75'), 'USDEUR' : Decimal('1.16'),
+    'CADUSD' : Decimal('1.33'), 'CADEUR' : Decimal('1.54'),
+    'EURUSD' : Decimal('0.86'), 'EURCAD' : Decimal('0.65')
+    }
+
+  def __init__(self, v='0', units='USD'):
+    self.dec_amt = Decimal(v)
+    self.units = units
+    
+  def __str__(self):
+    s = str(self.dec_amt) + ' ' + self.units
+    return s
+  
+  def __repr__(self):
+    s = ('Money(' + str(slef.dec_amt) + ' ' + self.units + ')')
+    return s
+  
+  
+  # 추가된 덧셈 함수
+  
+  def __add__(self, other):
+    '''통화 더하기 함수
+    2개의 Money 객체를 더한다.
+    두번째 통화가 다른 통화 단위를 갖고 있다면
+    두 값을 더하기 전에 환율이 반영되어야 한다.
+    소수 두번째 자리로 반올림을 한다.
+    '''
+    
+    if self.units != other.units:
+      # 두 개체의 통화 단위로 key를 만들어서 원하는 환율을 찾음 (others를 self의 통화단위로 변환)
+      r = Money.exch_dict[self.units + other.units]
+      m1 = self.dec_amt
+      m2 = other.dec_amt * r
+      m = Money(m1+m2, self.units)
+      
+    else:
+      m = Money(self.dec_amt + other.dec_amt, self.units)
+      
+    m.dec_amt = round(m.dec_amt, 2)
+    return m
+```
+
+
+
+
+
+
 
 
 

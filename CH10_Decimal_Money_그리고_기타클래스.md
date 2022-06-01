@@ -192,6 +192,69 @@ class Money():
     return m
 ```
 
+<br> <br>
+
+## 10.10 데모: Money 계산기
+- 사용자 입력을 보다 간편하게 만들 수 있는 Money 더하기 계산기를 만들어보자.
+
+```python
+from decimal import Decimal
+
+# Money 클래스 정의문을 여기에 넣거나 import해야 함
+
+def money_calc():
+  ''' Money 더하기 계산기
+  빈 문자열을 입력하기 전까지, Money 객체 나열을 입력받는다.
+  빈 문자열이 입력되면 전체 합계를 출력한다.
+  ```
+  
+  n = 0
+  while True:
+    s = input('Enter money value: ')
+    s = s.strip()
+    
+    # 빈 문자열이 들어오면 break
+    if not s:
+      break
+      
+    a_list = s.split()
+    d = a_list[0]
+    
+    if len(a_list) > 1:
+      m = Money(d, a_list[1])
+    else:
+      m = Money(d) # 통화단위를 입력하지 않으면 USD
+    
+    # 최초 값의 통화단위를 기준으로 더하기를 시행함
+    # 기본 통화단위는 USD, 만약 최초 값의 통화단위가 USD가 아니라면 이후의 값들은 USD라도 USD를 명시해야 함
+    if n == 0:
+      amt = m
+    else:
+      amt += m
+      
+    n += 1
+  
+  print('Total is', amt)
+  
+money_calc()
+      
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

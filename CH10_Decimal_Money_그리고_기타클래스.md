@@ -238,18 +238,94 @@ def money_calc():
   
 money_calc()
       
+```
+
+<br> <br>
+
+## 10.11 기본 통화 설정하기
+- 사용자가 직접 기본단위를 설정할 수 있도록 Money 클래스를 변경해보자.
+
+```python
+
+class Money():
+
+  default_curr = 'USD'
+
+  def __init__(self, v='0', units=''):
+    self.dec_amt = Decimal(v)
+    if not units:
+      self.units = Money.default_curr
+    else:
+      self.units = units
 
 ```
 
+<br><br>
 
+## 10.12 Money와 상속
+- Money 클래스를 만드는 최선의 방법은 상속으로, Decimal의 하위 클래스를 만드는 것이다.
+- 문제는 Decimal 타입이 불변이라는 것이지만, 몇 줄의 코드로 해결할 수 있다.
 
+<br>
 
+- 일반적인 상속은 구현하기 쉽다. 
+  - Money 클래스의 상위 클래스 이름을 Thingie라고 하고, 가변타입이라고 가정해보자.
+  - 이러한 경우에는 아래와 같이 쉽게 작성할 수 있는 코드를 사용한다.
 
+```python
+class Money(Thingie):
+  
+  def __init__(self, v, units='USD'):
+  
+    # 상위 클래스인 Thingie의 __init__ 메서드를 실행 (부모 클래스의 메서드 호출)
+    # Decimal은 불변 타입이기 때문에 사용할 수 없음
+    super().__init__(v)
+    # 두번째 인수는 직접 초기화
+    self.units = units
+```
 
+<br>
 
+- Money 클래스에서 상쇽받을 Decimal 클래스의 유산은 \_\_new__ 메서드에 의해 제어된다.
+```python
+from decimal import Decimal
 
+class Money(Decimal):
+  
+  # 여기서의 cls는 숨겨진 파라미터(인자)로, 클래스 자신을 뜻함
+  # 상위 클래스 안에서 유래한 클래스를 초기화 (이 경우에는 v)
+  # 상위 클래서의 __new__가 반환하는 값을 그대로 반환해야 함
+  def __new__(cls, v, units='USD'):
+    return super(Money, cls).__new__(cls, v)
+    
+  def __init__(self, v, units='USD'):
+    self.units = units
 
+m = Money('0.11', 'USD')
+print(m, m.units)
+# 0.11 USD 출력
 
+```
+
+<br>
+
+- 이 코드는 다음과 같이 좀 더 일반화할 수 있다.
+  - d는 상위 클래스의 데이터, other_data는 \_\_init__에서 반드시 초기화되어야 하는 하위 클래스의 데이터이다.
+
+```python
+class MyClass(MySuperClass):
+  def __new__(cls, d, other_data):
+    return super(MyClass, cls).__new__(cls, d)
+```
+
+<br>
+
+- 파이썬이 이러한 상속을 어렵게 만든 이유가 몇가지 있다. 한 가지로는 부모 클래스가 불변이라는 것은 한번 생선된 데이터는 절대로 변경되지 않는다는 것을 의미한다. 또한, 일부 내장 클래스는 추가로 \_\_new__ 함수를 사용하여 값을 초기화하며, 부모 클래스의 \_\_init__ 함수로는 부족하다는 것을 의미한다. 
+
+<br><br>
+
+## 10.13 Fraction 클래스
+- 
 
 
 
